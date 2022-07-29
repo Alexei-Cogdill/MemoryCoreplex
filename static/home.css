@@ -39,8 +39,7 @@ li a:hover:not(.active) {
 }
 
 .logoImage img {
-    width: 300px;
-    height: mr-auto;
+    width: 200px;
 }
 
 .head {
@@ -48,4 +47,15 @@ li a:hover:not(.active) {
     padding-left: 100px;
     padding-right: 100px;
     padding-bottom: 10px;
+}
+
+.loginPage {
+  padding-top: 25px;
+  padding-left: 50px;
+  padding-right: 50px;
+  background-color: rgb(51, 102, 64);
+}
+
+.jumbotron {
+  background-color: rgb(82,102,87)
 }
