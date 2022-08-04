@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, EqualTo
 from wtforms import ValidationError
-from models import User
+from models import User, Review
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired("Please enter a valid email")])
@@ -25,3 +25,8 @@ class RegistrationForm(FlaskForm):
     def validate_displayName(self, display_name):
         if User.query.filter_by(display_name=display_name.data).first():
             raise ValidationError('This display name is already taken!')
+
+class ReviewForm(FlaskForm):
+    reviewTitle = StringField('Review Title', validators=[DataRequired("Please enter a review title")])
+    summary = StringField('Review Summary', validators=[DataRequired("Please enter a summary for your review")])
+    submit = SubmitField('Submit Review')

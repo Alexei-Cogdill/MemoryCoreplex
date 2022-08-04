@@ -36,4 +36,3 @@ URLObject==2.4.3
 Werkzeug==0.14.1
 WTForms==2.1
 nltk==3.6.7
-Flask-Admin==11.6.0

@@ -11,8 +11,82 @@
         <link rel="stylesheet" href="../static/home.css">
         <title>Memory Coreplex</title>
     </head>
-    <body style="background-color: rgb(82,102,87)">
-        <header style="background: rgb(89,179,112)">
+    <body style="background-color: rgb(82, 102, 87)">
+      <header class="text-white justify-content-center" style="background-color: rgb(89,179,112)">
+        <div class="container">
+          <div class="d-flex align-items-center justify-content-center">
+            <a class="navbar-brand d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+              <img
+                src="../static/logo.png"
+                height="100"
+                alt="Memory Coreplex Logo"
+                style=""
+              />
+            </a>
+            <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0" style="padding-right: 0px">
+              <li>
+                  <a class="active" href="{{url_for('home')}}">Home<span class="sr-only">(current)</span></a>
+              </li>
+              <!-- If statements to see which user is logged in -->
+              {% if current_user.is_authenticated and current_user.is_Admin %}
+              <li>
+                  <a href="">Games</a>
+              </li>
+              <li>
+                  <a href="">Leaderboard</a>
+              </li>
+              <li>
+                  <a href="">Approve Reviews</a>
+              </li>
+              <li>
+                  <a href="">Game Submissions</a>
+              </li>
+              {% elif current_user.is_authenticated %}
+              <li>
+                  <a href="">Games</a>
+              </li>
+              <li>
+                  <a href="{{url_for('profile')}}">Profile</a>
+              </li>
+              <li>
+                  <a href="">Leaderboard</a>
+              </li>
+              {% endif %}
+              <li>
+                  <a href="{{url_for('reviews')}}">Reviews</a>
+              </li>
+              <li>
+                  <a href="">Submit Game</a>
+              </li>
+              <li>
+                  <a href="{{url_for('about')}}">About</a>
+              </li>
+              <!-- if statement to see if user is logged in or logged out -->
+              {% if current_user.is_authenticated %}
+              <li class="text-end" style="float:right">
+                  <a href="{{url_for('logout')}}">Logout</a>
+              </li>
+              {% else %}
+              <li style="float:right">
+                  <a href="{{url_for('register')}}">Register</a>
+              </li>
+              <li style="float:right">
+                  <a href="{{url_for('login')}}">Login</a>
+              </li>
+              {% endif %}
+            </ul>
+            <a class="navbar-brand d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+              <img
+                src="../static/flippedLogo.png"
+                height="100"
+                alt="Memory Coreplex Logo"
+                style="margin-left: 16px; margin-right: 0px"
+              />
+            </a>
+          </div>
+        </div>
+      </header>
+        <!-- <header style="background: rgb(89,179,112)">
             <div class="container" style="max-width: 100%">
                 <div class="row head">
                     <div class="col-sm logoImage">
@@ -85,7 +159,7 @@
                     </div>
                 </div>
             </div>
-        </header>
+        </header> -->
         {% with messages = get_flashed_messages(with_categories=true) %}
                  {% if messages %}
                    {% for category, message in messages %}
