@@ -16,11 +16,6 @@
                           <br>
                           <br>
                           <br>
-                          {% if current_user.is_authenticated and not current_user.is_Admin %}
-                            <a class="btn btn-primary " href="{{url_for('createReview')}}" role="button">Create a Review</a>
-                            <br>
-                            <br>
-                          {% endif %}
                       </div>
               </div>
           </div>
@@ -29,26 +24,17 @@
   <div class="container-fluid pt-3 rounded-lg bodyContainer" style="margin: 5px; background-color: rgb(187, 234, 199); display: flex; flex-direction: row; flex-wrap: wrap; width: 100%">
     <div style="margin: 5px; width: 100%; display: flex; flex-direction: row; flex-wrap: wrap">
       {% for user in users %}
-        {% if user.post.display_name and user.is_approved %}
+        {% if not user.is_approved %}
         <div style="flex: 20%; padding: 10px; margin: 5px; background-color: rgb(89, 179, 112)">
           <p>User: {{ user.post.display_name }}</p>
           <p>Title: {{ user.reviewTitle }}</p>
           <p>Summary: {{ user.summary }}</p>
+          <form action="{{ url_for('flip') }}" method="POST">
+            <input type="hidden" name="flip" value="{{ user.review_id }}"/>
+            <input type="submit" class="btn btn-xs btn-primary" value="Approve"/>
+          </form>
         </div>
         {% endif %}
       {% endfor %}
     </div>
-
-
-    <!-- {% with reviews = get_flashed_messages(with_categories=true) %}
-             {% if messages %}
-               {% for category, message in messages %}
-                 <div class='alert alert-{{ category }} alert-dismissible' role='alert'>
-                   <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
-                   {{ message }}
-                 </div>
-               {% endfor %}
-             {% endif %}
-           {% endwith %}-->
-  </div>
 {% endblock %}

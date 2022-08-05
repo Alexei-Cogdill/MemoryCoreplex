@@ -1,8 +1,9 @@
-from init import db, login_manager
+from init import db, login_manager, api
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import relationship
+from flask_restful import Resource, Api
 
 
 @login_manager.user_loader
@@ -32,6 +33,9 @@ class User(db.Model, UserMixin):
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
+    def json(self):
+        return {'name':self.name, 'display_name':self.display_name, 'email':self.email, 'password_hash':self.password_hash, 'is_Admin':self.is_Admin}
+
 class Review(db.Model):
 
     __tablename__ = "reviews"
@@ -40,9 +44,14 @@ class Review(db.Model):
     review_id = db.Column(db.Integer, primary_key=True)
     reviewTitle = db.Column(db.String(64), nullable=False)
     summary = db.Column(db.String(250), nullable=False)
+    is_approved = db.Column(db.Boolean, default=False)
     user_id = db.Column(db.Integer, ForeignKey("users.id"))
 
-    def __init__(self, reviewTitle, summary, user_id):
+    def __init__(self, reviewTitle, summary, is_approved, user_id):
         self.reviewTitle = reviewTitle
         self.summary = summary
+        self.is_approved = is_approved
         self.user_id = user_id
+
+    def json(self):
+        return {'reviewTitle':self.reviewTitle, 'summary':self.summary, 'is_approved':self.is_approved}

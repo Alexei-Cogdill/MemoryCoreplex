@@ -1,16 +1,19 @@
-from init import app, db
-from flask import render_template, redirect, request, url_for, flash, abort
+from init import app, db, api
+from flask import render_template, redirect, request, url_for, flash, abort, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
 from models import User, Review
 from forms import LoginForm, RegistrationForm, ReviewForm
 from nltk import flatten
-#from flask_admin import Admin
-#from flask_admin.contrib.sqla import ModelView
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
+from flask_restful import Resource, Api
+import requests
+import json
 
-#admin = Admin(app)
-#admin.add_view(ModelView(User, db.session))
-#admin.add_view(ModelView(Review, db.session))
+admin = Admin(app)
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Review, db.session))
 
 @app.route('/', methods=['GET'])
 def home():
@@ -20,8 +23,23 @@ def home():
 def about():
     return render_template('about.html')
 
+@app.route('/approveReview', methods=['GET', 'POST'])
+def approveReview():
+    users = Review.query.all()
+    return render_template('approveReview.html', users=users)
+
+@app.route('/flip', methods=['POST'])
+def flip():
+    review = Review.query.filter_by(review_id=request.form["flip"]).first()
+    review.is_approved = True
+    db.session.commit()
+    return redirect(url_for('approveReview'))
+
 @app.route('/profile', methods=['GET'])
 def profile():
+    #req = requests.get('http://127.0.0.1:5000/api/user')
+    #data = json.loads(req.content)
+
     return render_template('profile.html')
 
 @app.route('/userHome', methods=['GET'])
@@ -46,7 +64,8 @@ def createReview():
     if form.validate_on_submit():
         review = Review(reviewTitle=form.reviewTitle.data,
                     summary=form.summary.data,
-                    user_id=current_user.id)
+                    user_id=current_user.id,
+                    is_approved=False)
         db.session.add(review)
         db.session.commit()
         flash("Review Submitted", "primary")
@@ -119,3 +138,27 @@ def register():
         return redirect(url_for('register'))
 
     return render_template('register.html', form=form)
+
+
+class GetUser(Resource):
+    def get(self, display_name):
+
+        user = User.query.filter_by(display_name=display_name).first()
+
+        if user:
+            return user.json()
+        else:
+            return {'Could not get user'}, 404
+
+class getReview(Resource):
+    def get(self, review_id):
+
+        review = Review.query.filter_by(review_id=review_id).first()
+
+        if review:
+            return review.json()
+        else:
+            return {"No reviews available"}, 404
+
+api.add_resource(GetUser,'/users/<string:display_name>')
+api.add_resource(getReview,'/reviews/<int:review_id>')
