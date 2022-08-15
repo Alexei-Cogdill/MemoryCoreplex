@@ -1,7 +1,7 @@
 from init import app, db, api
-from flask import render_template, redirect, request, url_for, flash, abort, jsonify
+from flask import render_template, redirect, request, url_for, flash, abort, jsonify, make_response
 from flask_login import login_user, login_required, logout_user, current_user
-from models import User, Review
+from models import User, Review, Score
 from forms import LoginForm, RegistrationForm, ReviewForm
 from nltk import flatten
 from flask_admin import Admin
@@ -14,14 +14,33 @@ import json
 admin = Admin(app)
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Review, db.session))
+admin.add_view(ModelView(Score, db.session))
 
-@app.route('/', methods=['GET'])
-def home():
-    return render_template('home.html')
+@app.route('/games')
+def games():
+    return render_template('games.html')
+
+@app.route('/numbergame')
+def numbergame():
+    return render_template('numbergame.html')
 
 @app.route('/about')
 def about():
     return render_template('about.html')
+
+@app.route('/profile/<string:display_name>', methods=['GET', 'POST'])
+def profile(display_name):
+    us = GetProfile()
+    user = us.get(display_name)
+    return render_template('profile.html', user=user)
+
+@app.route('/profile/userScore', methods=['GET', 'POST'])
+def userScore():
+    scores = Score.query.filter(Score.score).order_by(Score.score.desc())
+    ddl = []
+    for score in scores:
+        ddl.append(score)
+    return render_template('userScores.html',ddl=ddl)
 
 @app.route('/approveReview', methods=['GET', 'POST'])
 def approveReview():
@@ -34,13 +53,6 @@ def flip():
     review.is_approved = True
     db.session.commit()
     return redirect(url_for('approveReview'))
-
-@app.route('/profile', methods=['GET'])
-def profile():
-    #req = requests.get('http://127.0.0.1:5000/api/user')
-    #data = json.loads(req.content)
-
-    return render_template('profile.html')
 
 @app.route('/userHome', methods=['GET'])
 @login_required
@@ -82,7 +94,7 @@ def createReview():
 def logout():
     logout_user()
     flash("You logged out!", "primary")
-    return redirect(url_for('home'))
+    return redirect(url_for('homecontroller'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -149,6 +161,15 @@ class GetUser(Resource):
             return user.json()
         else:
             return {'Could not get user'}, 404
+class GetProfile(Resource):
+    def get(self, display_name):
+
+        profile = User.query.filter_by(display_name=display_name).first()
+        if profile:
+            return profile.json()
+        else:
+            abort(404, description="Unable to load profile data")
+
 
 class getReview(Resource):
     def get(self, review_id):
@@ -160,5 +181,14 @@ class getReview(Resource):
         else:
             return {"No reviews available"}, 404
 
+class homeController(Resource):
+    def __init__(self):
+        pass
+    def get(self):
+        headers = {'Content-Type': 'text/html'}
+        return make_response(render_template('home.html'),200,headers)
+
 api.add_resource(GetUser,'/users/<string:display_name>')
+api.add_resource(GetProfile,'/profile/<string:display_name>')
 api.add_resource(getReview,'/reviews/<int:review_id>')
+api.add_resource(homeController, '/')

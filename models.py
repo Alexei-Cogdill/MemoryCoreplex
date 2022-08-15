@@ -22,6 +22,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     is_Admin = db.Column(db.Boolean, default=False)
     reviews = db.relationship('Review', backref='post')
+    scores = db.relationship('Score', backref='postt')
 
     def __init__(self, name, display_name, email, password, is_Admin):
         self.name = name
@@ -55,3 +56,20 @@ class Review(db.Model):
 
     def json(self):
         return {'reviewTitle':self.reviewTitle, 'summary':self.summary, 'is_approved':self.is_approved}
+
+class Score(db.Model):
+
+    __tablename__ = "scores"
+
+    score_id = db.Column(db.Integer, primary_key=True)
+    score = db.Column(db.Integer)
+    time = db.Column(db.Integer)
+    user_id = db.Column(db.Integer, ForeignKey("users.id"))
+
+    def __init__(self, score, time, user_id):
+        self.score = score
+        self.time = time
+        self.user_id = user_id
+
+    def json(self):
+        return {'score':self.score, 'time':self.time, 'display_name':post.display_name}
