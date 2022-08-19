@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{url_for('.static', filename='profile.css')}}">
+{% endblock %}
+
+{% block content %}
+<div class="container rounded-lg bodyContainer" style="margin-top: 100px; background-color: rgb(187, 234, 199); width: 700px">
+  <div class="row justify-content-center text-center">
+      <div class="col-md-auto font-weight-bold" style="font-size: x-large">Leaderboard</div>
+  </div>
+  {% for score in ddl %}
+      <div class="container rounded-lg bodyContainer" style="margin-top: 5px; margin-bottom: 5px">
+        <div class="row justify-content-center text-center">
+          <div class="col-sm-4" style="background-color: rgb(114, 230, 143)">
+            <p>User: {{ score.postt.display_name }}</p>
+          </div>
+          <div class="col-sm-4" style="background-color: rgb(114, 230, 143)">
+            <p>Score: {{ score.score }}</p>
+          </div>
+        </div>
+      </div>
+  {% endfor %}
+</div>
+{% endblock %}
