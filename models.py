@@ -62,14 +62,15 @@ class Score(db.Model):
     __tablename__ = "scores"
 
     score_id = db.Column(db.Integer, primary_key=True)
-    score = db.Column(db.Integer)
-    time = db.Column(db.Integer)
+    score = db.Column(db.String(), nullable=False)
     user_id = db.Column(db.Integer, ForeignKey("users.id"))
 
-    def __init__(self, score, time, user_id):
+    def __init__(self, score, user_id):
         self.score = score
-        self.time = time
         self.user_id = user_id
 
     def json(self):
-        return {'score':self.score, 'time':self.time, 'display_name':post.display_name}
+        return {'score':self.score}
+
+    def __len__(self):
+        return len(str(self.score))
