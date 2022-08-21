@@ -3,6 +3,7 @@ let increment = document.getElementById("button");
 let scoring = document.getElementById("scoring");
 let randomNumber = document.getElementById("num")
 let submittedScore = document.getElementById("userScoreSubmit")
+let gameOver = document.getElementById("gameOver")
 let gameRunning = true;
 
 function main() {
@@ -10,19 +11,22 @@ function main() {
     'score': score,
     'gameRun': gameRunning
   }
-
+  setTimeout(() => document.getElementById("submitButton").disabled = true)
   currentCount()
   if (gameRunning){
     generateRandomNumber()
-    setTimeout(() => document.getElementById("userForm").style.visibility = "visible", 1000) //1000
-    setTimeout(() => document.getElementById("num").style.visibility = "hidden", 1000)
+    setTimeout(() => document.getElementById("userForm").style.visibility = "visible", 5000)
+    setTimeout(() => document.getElementById("num").style.visibility = "hidden", 5000)
     console.log(usersScore)
   } else if (gameRunning === false){
       console.log('game over');
       console.log(usersScore);
       setTimeout(() => document.getElementById("submitForm").style.visibility = "visible")
       submittedScore.value = scoring.innerHTML
-
+      setTimeout(() => document.getElementById("userInput").disabled = true)
+      setTimeout(() => document.getElementById("button").disabled = true)
+      setTimeout(() => document.getElementById("submitButton").disabled = false)
+      gameOver.innerHTML = "You gussed wrong! Game Over!"
   }
 
 }
@@ -53,8 +57,8 @@ function currentCount() {
 }
 
 function generateRandomNumber() {
-  var minm = 1;
-  var maxm = 2;
+  var minm = 100000;
+  var maxm = 999999;
   randoNumbo = randomNumber.innerHTML = Math.floor(Math.random() * (maxm - minm + 1)) + minm;
   return randoNumbo;
 }

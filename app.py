@@ -4,8 +4,8 @@ from flask_login import login_user, login_required, logout_user, current_user
 from models import User, Review, Score
 from forms import LoginForm, RegistrationForm, ReviewForm, ScoreForm
 from nltk import flatten
-from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
+#from flask_admin import Admin
+#from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
 from flask_restful import Resource, Api
 from flask_jsglue import JSGlue
@@ -13,27 +13,33 @@ import requests
 import json
 import random
 
-admin = Admin(app)
-admin.add_view(ModelView(User, db.session))
-admin.add_view(ModelView(Review, db.session))
-admin.add_view(ModelView(Score, db.session))
+#admin = Admin(app)
+#admin.add_view(ModelView(User, db.session))
+#admin.add_view(ModelView(Review, db.session))
+#admin.add_view(ModelView(Score, db.session))
 
 @app.route('/games')
+@login_required
 def games():
     return render_template('games.html')
 
 @app.route('/games/numbergame', methods=['GET', 'POST'])
+@login_required
 def numbergame():
 
     form = ScoreForm()
     if form.validate_on_submit():
-        score = Score(score=form.score.data,
-            user_id=current_user.id
-            )
-        db.session.add(score)
-        db.session.commit()
-        flash("Score Submitted", "primary")
-        return redirect(url_for('games'))
+        if int(form.score.data) > 0:
+            score = Score(score=form.score.data,
+                user_id=current_user.id
+                )
+            db.session.add(score)
+            db.session.commit()
+            flash("Score Submitted", "primary")
+            return redirect(url_for('games'))
+        elif int(form.score.data) == 0:
+            flash("Did not score", "primary")
+            return redirect(url_for('games'))
     elif len(form.errors.items()) > 0:
         randomValue = flatten(list(form.errors.values()))
         for i in randomValue:
@@ -41,24 +47,19 @@ def numbergame():
         return redirect(url_for('games'))
     return render_template('numbergame.html', form=form)
 
-@app.route('/ProcessUserScore/<string:userscore>', methods=['POST'])
-def ProcessUserScore(userscore):
-    userscore=json.loads(userscore)
-    usersScore=userscore
-    print(usersScore)
-    return('/games')
-
 @app.route('/about')
 def about():
     return render_template('about.html')
 
 @app.route('/profile/<string:display_name>', methods=['GET', 'POST'])
+@login_required
 def profile(display_name):
     us = GetProfile()
     user = us.get(display_name)
     return render_template('profile.html', user=user)
 
 @app.route('/leaderboard')
+@login_required
 def leaderboard():
     scores = Score.query.order_by(Score.score.desc()).all()
     ddl = []
@@ -67,6 +68,7 @@ def leaderboard():
     return render_template('leaderboard.html', ddl=ddl)
 
 @app.route('/profile/userScore', methods=['GET', 'POST'])
+@login_required
 def userScore():
     scores = Score.query.filter(Score.score).order_by(Score.score.desc())
     ddl = []
@@ -75,11 +77,13 @@ def userScore():
     return render_template('userScores.html',ddl=ddl)
 
 @app.route('/approveReview', methods=['GET', 'POST'])
+@login_required
 def approveReview():
     users = Review.query.all()
     return render_template('approveReview.html', users=users)
 
 @app.route('/flip', methods=['POST'])
+@login_required
 def flip():
     review = Review.query.filter_by(review_id=request.form["flip"]).first()
     review.is_approved = True
@@ -102,6 +106,7 @@ def reviews():
     return render_template('reviews.html', users=users)
 
 @app.route('/createReview', methods=['GET', 'POST'])
+@login_required
 def createReview():
 
     form = ReviewForm()

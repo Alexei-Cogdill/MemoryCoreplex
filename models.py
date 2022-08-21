@@ -62,11 +62,11 @@ class Score(db.Model):
     __tablename__ = "scores"
 
     score_id = db.Column(db.Integer, primary_key=True)
-    score = db.Column(db.String(), nullable=False)
+    score = db.Column(db.Integer)
     user_id = db.Column(db.Integer, ForeignKey("users.id"))
 
     def __init__(self, score, user_id):
-        self.score = score
+        self.score = str(score)
         self.user_id = user_id
 
     def json(self):
