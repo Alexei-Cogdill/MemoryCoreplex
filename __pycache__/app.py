@@ -2,20 +2,21 @@ from init import app, db, api
 from flask import render_template, redirect, request, url_for, flash, abort, jsonify, make_response
 from flask_login import login_user, login_required, logout_user, current_user
 from models import User, Review, Score
-from forms import LoginForm, RegistrationForm, ReviewForm
+from forms import LoginForm, RegistrationForm, ReviewForm, ScoreForm
 from nltk import flatten
-#from flask_admin import Admin
-#from flask_admin.contrib.sqla import ModelView
+from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
 from flask_restful import Resource, Api
+from flask_jsglue import JSGlue
 import requests
 import json
 import random
 
-#admin = Admin(app)
-#admin.add_view(ModelView(User, db.session))
-#admin.add_view(ModelView(Review, db.session))
-#admin.add_view(ModelView(Score, db.session))
+admin = Admin(app)
+admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Review, db.session))
+admin.add_view(ModelView(Score, db.session))
 
 @app.route('/games')
 def games():
@@ -23,10 +24,29 @@ def games():
 
 @app.route('/games/numbergame', methods=['GET', 'POST'])
 def numbergame():
-    if request.method == 'POST':
-        print(hi)
-    elif request.method == 'GET':
-        return render_template('numbergame.html', score=0)
+
+    form = ScoreForm()
+    if form.validate_on_submit():
+        score = Score(score=form.score.data,
+            user_id=current_user.id
+            )
+        db.session.add(score)
+        db.session.commit()
+        flash("Score Submitted", "primary")
+        return redirect(url_for('games'))
+    elif len(form.errors.items()) > 0:
+        randomValue = flatten(list(form.errors.values()))
+        for i in randomValue:
+            flash(i, "danger")
+        return redirect(url_for('games'))
+    return render_template('numbergame.html', form=form)
+
+@app.route('/ProcessUserScore/<string:userscore>', methods=['POST'])
+def ProcessUserScore(userscore):
+    userscore=json.loads(userscore)
+    usersScore=userscore
+    print(usersScore)
+    return('/games')
 
 @app.route('/about')
 def about():

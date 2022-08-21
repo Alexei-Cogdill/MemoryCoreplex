@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="container rounded-lg bodyContainer" style="margin-top: 100px; background-color: rgb(187, 234, 199)" onmousedown="return false" onselectstart="return false">
+<div class="container rounded-lg bodyContainer" style="margin-top: 100px; background-color: rgb(187, 234, 199)" onselectstart="return false">
     <div class="row justify-content-center text-center">
         <div class="col-md-auto font-weight-bold" style="font-size: x-large">Number Memory Game</div>
     </div>
@@ -8,8 +8,10 @@
     <div class="container-fluid" style="background-color: rgb(114, 230, 143); height: 250px">
         <div class="row">
             <div class="col-sm-12">
-              <a style="font-size: 35px; text-decoration: underline">Score: </a>
-              <a class="score" id="scoring" name="scorings" style="font-size: 35px">{{ score }}</a>
+              <form id="scoreForm">
+                <a style="font-size: 35px; text-decoration: underline">Score: </a>
+                <a class="score" id="scoring" name="scorings" style="font-size: 35px">{{ score }}</a>
+              </form>
             </div>
         </div>
         <div class="row">
@@ -24,6 +26,11 @@
               <form id="userForm" style="text-align: center; visibility: hidden">
                 <input id="userInput" name="userInput" type="text"/>
                 <input id="button" name="button" type="button" class="btn btn-xs btn-primary" value="Submit" style="width: 100px" onclick="checkInputs()"/>
+              </form>
+              <form id="submitForm" style="text-align: center; visibility: hidden" method="POST">
+                {{ form.hidden_tag() }}
+                <p>{{ form.score(class="form-control", id="userScoreSubmit", value="")}}</P>
+                <p>{{ form.submit(class="btn btn-xs btn-primary", style="width: 100px")}}</p>
               </form>
             </div>
         </div>
