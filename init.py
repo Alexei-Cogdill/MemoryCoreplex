@@ -6,6 +6,9 @@ from flask_migrate import Migrate
 from flask_login import LoginManager
 from flask_restful import Resource, Api
 
+#setting up Flask app and login manager for user
+#set up app configurations 
+
 login_manager = LoginManager()
 
 app = Flask(__name__)

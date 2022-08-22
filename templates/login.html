@@ -6,7 +6,7 @@
         <div class="col-md3" style="padding-top: 25px; padding-left: 50px; padding-right: 50px; padding-bottom: 25px; background-color: rgb(187, 234, 199); border-radius: 15px">
           <form method="POST">
             <h2 class="text-dark text-center">Log In!</h2>
-            {{ form.hidden_tag() }}
+            {{ form.hidden_tag() }}   <!-- form data posted to check data against db and login -->
             <p>{{ form.email(class="form-control form-control-lg", placeholder="Email") }}</p>
             <p>{{ form.password(class="form-control form-control-lg", placeholder="Password")}}</p>
             {{ form.submit(class="w-100 btn btn-lg btn-danger") }}

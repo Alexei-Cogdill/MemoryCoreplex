@@ -29,9 +29,14 @@
           <p>User: {{ user.post.display_name }}</p>
           <p>Title: {{ user.reviewTitle }}</p>
           <p>Summary: {{ user.summary }}</p>
-          <form action="{{ url_for('flip') }}" method="POST">
+          <form action="{{ url_for('flip') }}" method="POST">   <!-- form used to post data changes for approving review -->
             <input type="hidden" name="flip" value="{{ user.review_id }}"/>
             <input type="submit" class="btn btn-xs btn-primary" value="Approve"/>
+          </form>
+          <br>
+          <form action="{{ url_for('flip2') }}" method="POST">   <!-- form used to post data changes for approving review -->
+            <input type="hidden" name="flip2" value="{{ user.review_id }}"/>
+            <input type="submit" class="btn btn-xs btn-danger" value="Deny"/>
           </form>
         </div>
         {% endif %}
